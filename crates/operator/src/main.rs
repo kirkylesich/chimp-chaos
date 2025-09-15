@@ -3,7 +3,7 @@
 #![warn(clippy::pedantic)]
 
 use actix_web::{App as ActixApp, HttpServer};
-use operator::{http, build_app};
+use operator::{build_app, http};
 // use std::net::SocketAddr;
 use tracing::info;
 // removed duplicate build_app import
@@ -28,7 +28,9 @@ async fn main() -> anyhow::Result<()> {
         let data_app = http_app.clone();
         ActixApp::new()
             .app_data(actix_web::web::Data::new(data_app))
-            .app_data(actix_web::web::Data::new(operator::state::SharedState::new()))
+            .app_data(actix_web::web::Data::new(
+                operator::state::SharedState::new(),
+            ))
             .configure(http::configure)
     })
     .bind(bind_str)?
@@ -38,7 +40,8 @@ async fn main() -> anyhow::Result<()> {
 }
 
 fn init_tracing() {
-    let fmt = tracing_subscriber::fmt().with_env_filter(tracing_subscriber::EnvFilter::from_default_env());
+    let fmt = tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env());
     fmt.json().init();
 }
 
@@ -49,4 +52,3 @@ mod tests {
         assert!(true);
     }
 }
-

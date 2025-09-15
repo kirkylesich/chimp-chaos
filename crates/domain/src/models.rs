@@ -72,8 +72,8 @@ pub struct AgentFault {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChaosExperimentStatus {
     pub phase: Phase,
-    pub started_at: Option<DateTime<Utc>>, 
-    pub ends_at: Option<DateTime<Utc>>,    
+    pub started_at: Option<DateTime<Utc>>,
+    pub ends_at: Option<DateTime<Utc>>,
     pub baseline_window: Option<String>,
     pub failure_window: Option<String>,
     pub istio_patched: bool,
@@ -150,4 +150,3 @@ pub struct ChaosReport {
     pub topology: Topology,
     pub artifacts: Artifacts,
 }
-

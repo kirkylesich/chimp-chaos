@@ -8,8 +8,13 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, CustomResource, Deserialize, Serialize, JsonSchema)]
-#[kube(group = "chaos.k8s.local", version = "v1alpha1", kind = "ChaosExperiment", namespaced)]
-#[kube(status = "ChaosExperimentStatus")] 
+#[kube(
+    group = "chaos.k8s.local",
+    version = "v1alpha1",
+    kind = "ChaosExperiment",
+    namespaced
+)]
+#[kube(status = "ChaosExperimentStatus")]
 pub struct ChaosExperimentSpec {
     pub targets: Vec<Target>,
     pub mode: Mode,
@@ -38,7 +43,11 @@ pub struct HttpMatch {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub enum Mode { Agent, Mesh, Mixed }
+pub enum Mode {
+    Agent,
+    Mesh,
+    Mixed,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
 pub struct LoadProfile {
@@ -75,7 +84,13 @@ pub struct ChaosExperimentStatus {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub enum Phase { Pending, Running, Stopping, Completed, Error }
+pub enum Phase {
+    Pending,
+    Running,
+    Stopping,
+    Completed,
+    Error,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
 pub struct Snapshot {
@@ -83,7 +98,12 @@ pub struct Snapshot {
 }
 
 #[derive(Clone, Debug, CustomResource, Deserialize, Serialize, JsonSchema)]
-#[kube(group = "chaos.k8s.local", version = "v1alpha1", kind = "ChaosReport", namespaced)]
+#[kube(
+    group = "chaos.k8s.local",
+    version = "v1alpha1",
+    kind = "ChaosReport",
+    namespaced
+)]
 pub struct ChaosReportSpec {
     pub experiment_ref: ExperimentRef,
     pub windows: Windows,
@@ -93,10 +113,16 @@ pub struct ChaosReportSpec {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub struct ExperimentRef { pub namespace: String, pub name: String }
+pub struct ExperimentRef {
+    pub namespace: String,
+    pub name: String,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub struct Windows { pub baseline: String, pub failure: String }
+pub struct Windows {
+    pub baseline: String,
+    pub failure: String,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
 pub struct ServiceResult {
@@ -109,13 +135,21 @@ pub struct ServiceResult {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub struct Topology { pub nodes: Vec<String>, pub edges: Vec<Edge> }
+pub struct Topology {
+    pub nodes: Vec<String>,
+    pub edges: Vec<Edge>,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub struct Edge { pub from: String, pub to: String }
+pub struct Edge {
+    pub from: String,
+    pub to: String,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
-pub struct Artifacts { pub json: String }
+pub struct Artifacts {
+    pub json: String,
+}
 
 #[cfg(test)]
 mod tests {
@@ -123,7 +157,11 @@ mod tests {
 
     #[test]
     fn can_serialize_specs() {
-        let _ = serde_json::to_string(&LoadProfile { r#type: "none".into(), rps: None, connections: None }).unwrap();
+        let _ = serde_json::to_string(&LoadProfile {
+            r#type: "none".into(),
+            rps: None,
+            connections: None,
+        })
+        .unwrap();
     }
 }
-

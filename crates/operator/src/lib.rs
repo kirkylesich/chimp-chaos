@@ -4,9 +4,9 @@
 
 use std::sync::Arc;
 
+use crate::state::SharedStateRef;
 use adapters_k8s::{NoopAgents, NoopMesh, NoopMetrics, NoopSink, NoopTrace, SystemClock};
 use domain::ports::{AgentClient, Clock, MeshAdapter, MetricsBackend, ReportSink, TraceBackend};
-use crate::state::SharedStateRef;
 
 #[derive(Clone)]
 pub struct App {
@@ -34,4 +34,3 @@ pub fn build_app() -> App {
 pub mod controller;
 pub mod http;
 pub mod state;
-

@@ -69,4 +69,3 @@ impl ReportSink for MemoryReport {
         Ok(())
     }
 }
-

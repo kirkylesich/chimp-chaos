@@ -14,14 +14,17 @@ pub struct Settings {
 
 impl Default for Settings {
     fn default() -> Self {
-        Self { promql_base: None, tempo_base: None, http_bind: Some("0.0.0.0:8080".to_string()) }
+        Self {
+            promql_base: None,
+            tempo_base: None,
+            http_bind: Some("0.0.0.0:8080".to_string()),
+        }
     }
 }
 
 pub fn load() -> Settings {
     let mut builder = config::Config::builder();
-    builder = builder
-        .add_source(config::Environment::with_prefix("CHAOS").separator("__"));
+    builder = builder.add_source(config::Environment::with_prefix("CHAOS").separator("__"));
     let cfg = builder.build();
     let mut s = match cfg {
         Ok(c) => c.try_deserialize().unwrap_or_default(),
@@ -44,4 +47,3 @@ mod tests {
         assert!(s.http_bind.is_some());
     }
 }
-

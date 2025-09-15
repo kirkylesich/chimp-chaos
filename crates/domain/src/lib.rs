@@ -5,12 +5,11 @@
 
 //! Domain layer: models and ports (interfaces) with no infrastructure dependencies.
 
+pub mod errors;
 pub mod models;
 pub mod ports;
-pub mod errors;
 
 #[cfg(test)]
 mod tests;
 
 pub mod tests_support;
-

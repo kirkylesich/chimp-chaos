@@ -14,8 +14,9 @@ pub struct TempoTrace;
 impl TraceBackend for TempoTrace {
     async fn fetch_edges(&self, _window: &str) -> Result<Vec<Edge>, DomainError> {
         // Если переменная окружения TEMPO_BASE отсутствует — вернуть пустой список
-        if std::env::var("TEMPO_BASE").ok().is_none() { return Ok(Vec::new()); }
+        if std::env::var("TEMPO_BASE").ok().is_none() {
+            return Ok(Vec::new());
+        }
         Ok(Vec::new())
     }
 }
-

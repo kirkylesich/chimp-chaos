@@ -10,4 +10,3 @@ pub async fn run(_app: App) -> anyhow::Result<()> {
     info!("controller initialized");
     Ok(())
 }
-

@@ -6,21 +6,35 @@ use crate::models::{ChaosExperimentSpec, ChaosReport, Edge};
 /// Mesh control port (e.g., Istio)
 #[async_trait]
 pub trait MeshAdapter: Send + Sync {
-    async fn apply_fault(&self, spec: &ChaosExperimentSpec) -> Result<(), crate::errors::DomainError>;
-    async fn rollback_fault(&self, spec: &ChaosExperimentSpec) -> Result<(), crate::errors::DomainError>;
+    async fn apply_fault(
+        &self,
+        spec: &ChaosExperimentSpec,
+    ) -> Result<(), crate::errors::DomainError>;
+    async fn rollback_fault(
+        &self,
+        spec: &ChaosExperimentSpec,
+    ) -> Result<(), crate::errors::DomainError>;
 }
 
 /// Node agents port
 #[async_trait]
 pub trait AgentClient: Send + Sync {
-    async fn start_load(&self, spec: &ChaosExperimentSpec) -> Result<(), crate::errors::DomainError>;
-    async fn stop_load(&self, spec: &ChaosExperimentSpec) -> Result<(), crate::errors::DomainError>;
+    async fn start_load(
+        &self,
+        spec: &ChaosExperimentSpec,
+    ) -> Result<(), crate::errors::DomainError>;
+    async fn stop_load(&self, spec: &ChaosExperimentSpec)
+        -> Result<(), crate::errors::DomainError>;
 }
 
 /// Metrics backend port
 #[async_trait]
 pub trait MetricsBackend: Send + Sync {
-    async fn fetch_value(&self, query: &str, window: &str) -> Result<f64, crate::errors::DomainError>;
+    async fn fetch_value(
+        &self,
+        query: &str,
+        window: &str,
+    ) -> Result<f64, crate::errors::DomainError>;
 }
 
 /// Tracing backend port
@@ -39,4 +53,3 @@ pub trait ReportSink: Send + Sync {
 pub trait Clock: Send + Sync {
     fn now(&self) -> DateTime<Utc>;
 }
-

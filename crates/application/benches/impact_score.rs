@@ -1,5 +1,5 @@
-use criterion::{criterion_group, criterion_main, Criterion};
 use application::usecases::compute_impact_score;
+use criterion::{criterion_group, criterion_main, Criterion};
 
 fn bench_impact_score(c: &mut Criterion) {
     c.bench_function("impact_score", |b| {
@@ -11,4 +11,3 @@ fn bench_impact_score(c: &mut Criterion) {
 
 criterion_group!(benches, bench_impact_score);
 criterion_main!(benches);
-

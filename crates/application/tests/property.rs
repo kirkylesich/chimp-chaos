@@ -14,4 +14,3 @@ proptest! {
         prop_assert!(!v.is_nan());
     }
 }
-

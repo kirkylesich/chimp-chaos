@@ -13,4 +13,3 @@ fn bench_promql_parse(c: &mut Criterion) {
 
 criterion_group!(benches, bench_promql_parse);
 criterion_main!(benches);
-

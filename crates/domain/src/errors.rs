@@ -14,4 +14,3 @@ impl DomainError {
         Self::Message(msg.to_owned())
     }
 }
-

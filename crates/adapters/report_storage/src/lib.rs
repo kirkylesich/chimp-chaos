@@ -16,4 +16,3 @@ impl ReportSink for FsSink {
         Ok(())
     }
 }
-

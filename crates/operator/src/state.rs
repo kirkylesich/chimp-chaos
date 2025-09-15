@@ -14,7 +14,9 @@ pub struct SharedState {
 }
 
 impl SharedState {
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     pub fn set_status(&self, ns: &str, name: &str, status: ChaosExperimentStatus) {
         let mut g = self.statuses.lock().expect("status lock");
@@ -38,4 +40,3 @@ impl SharedState {
 }
 
 pub type SharedStateRef = Arc<SharedState>;
-

@@ -15,4 +15,3 @@ impl MetricsBackend for PromQl {
         Ok(1.0)
     }
 }
-

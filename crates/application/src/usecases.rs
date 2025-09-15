@@ -1,6 +1,9 @@
 use chrono::Duration;
 use domain::errors::DomainError;
-use domain::models::{Artifacts, ChaosExperimentSpec, ChaosExperimentStatus, ChaosReport, Edge, ExperimentRef, Phase, ServiceResult, Topology, Windows};
+use domain::models::{
+    Artifacts, ChaosExperimentSpec, ChaosExperimentStatus, ChaosReport, Edge, ExperimentRef, Phase,
+    ServiceResult, Topology, Windows,
+};
 use domain::ports::{AgentClient, Clock, MeshAdapter, MetricsBackend, ReportSink, TraceBackend};
 use tracing::instrument;
 
@@ -23,7 +26,14 @@ impl<'a> Reconciler<'a> {
         sink: &'a dyn ReportSink,
         clock: &'a dyn Clock,
     ) -> Self {
-        Self { mesh, agents, metrics, traces, sink, clock }
+        Self {
+            mesh,
+            agents,
+            metrics,
+            traces,
+            sink,
+            clock,
+        }
     }
 
     #[instrument(skip_all, fields(ns = %exp_ref.namespace, experiment = %exp_ref.name))]
@@ -38,7 +48,8 @@ impl<'a> Reconciler<'a> {
                 self.validate_spec(spec)?;
                 self.compute_windows(spec, status)?;
                 status.started_at = Some(self.clock.now());
-                status.ends_at = Some(self.clock.now() + Duration::seconds(spec.duration_seconds as i64));
+                status.ends_at =
+                    Some(self.clock.now() + Duration::seconds(spec.duration_seconds as i64));
                 status.phase = Phase::Running;
             }
             Phase::Running => {
@@ -68,7 +79,11 @@ impl<'a> Reconciler<'a> {
         Ok(())
     }
 
-    fn compute_windows(&self, spec: &ChaosExperimentSpec, status: &mut ChaosExperimentStatus) -> Result<(), DomainError> {
+    fn compute_windows(
+        &self,
+        spec: &ChaosExperimentSpec,
+        status: &mut ChaosExperimentStatus,
+    ) -> Result<(), DomainError> {
         // Baseline window: [-2*duration, -duration], failure: [now, now+duration]
         let d = spec.duration_seconds as i64;
         let baseline = format!("now-{}s_to_now-{}s", 2 * d, d);
@@ -78,7 +93,11 @@ impl<'a> Reconciler<'a> {
         Ok(())
     }
 
-    async fn maybe_apply_mesh(&self, spec: &ChaosExperimentSpec, status: &mut ChaosExperimentStatus) -> Result<(), DomainError> {
+    async fn maybe_apply_mesh(
+        &self,
+        spec: &ChaosExperimentSpec,
+        status: &mut ChaosExperimentStatus,
+    ) -> Result<(), DomainError> {
         use domain::models::Mode::*;
         match spec.mode {
             Mesh | Mixed => {
@@ -100,7 +119,12 @@ impl<'a> Reconciler<'a> {
         }
     }
 
-    async fn finalize(&self, spec: &ChaosExperimentSpec, status: &mut ChaosExperimentStatus, exp_ref: &ExperimentRef) -> Result<(), DomainError> {
+    async fn finalize(
+        &self,
+        spec: &ChaosExperimentSpec,
+        status: &mut ChaosExperimentStatus,
+        exp_ref: &ExperimentRef,
+    ) -> Result<(), DomainError> {
         use domain::models::Mode::*;
         match spec.mode {
             Mesh | Mixed => {
@@ -127,10 +151,25 @@ impl<'a> Reconciler<'a> {
         let edges = self.traces.fetch_edges(fail_win).await.unwrap_or_default();
         let report = ChaosReport {
             experiment_ref: exp_ref.clone(),
-            windows: Windows { baseline: base_win.to_string(), failure: fail_win.to_string() },
-            results: vec![ServiceResult { name: first_target_service(spec), rps_base, rps_fail, p95_base_ms: p95_base, p95_fail_ms: p95_fail, impact_score: impact }],
-            topology: Topology { nodes: collect_nodes(&edges), edges },
-            artifacts: Artifacts { json: "{}".to_string() },
+            windows: Windows {
+                baseline: base_win.to_string(),
+                failure: fail_win.to_string(),
+            },
+            results: vec![ServiceResult {
+                name: first_target_service(spec),
+                rps_base,
+                rps_fail,
+                p95_base_ms: p95_base,
+                p95_fail_ms: p95_fail,
+                impact_score: impact,
+            }],
+            topology: Topology {
+                nodes: collect_nodes(&edges),
+                edges,
+            },
+            artifacts: Artifacts {
+                json: "{}".to_string(),
+            },
         };
         self.sink.store_report(&report).await?;
         status.phase = Phase::Completed;
@@ -139,20 +178,32 @@ impl<'a> Reconciler<'a> {
 }
 
 fn first_target_service(spec: &ChaosExperimentSpec) -> String {
-    spec.targets.get(0).map(|t| t.service.clone()).unwrap_or_else(|| "unknown".to_string())
+    spec.targets
+        .get(0)
+        .map(|t| t.service.clone())
+        .unwrap_or_else(|| "unknown".to_string())
 }
 
 fn collect_nodes(edges: &[Edge]) -> Vec<String> {
     let mut nodes = Vec::new();
     for e in edges {
-        if !nodes.contains(&e.from) { nodes.push(e.from.clone()); }
-        if !nodes.contains(&e.to) { nodes.push(e.to.clone()); }
+        if !nodes.contains(&e.from) {
+            nodes.push(e.from.clone());
+        }
+        if !nodes.contains(&e.to) {
+            nodes.push(e.to.clone());
+        }
     }
     nodes
 }
 
 /// ImpactScore формула из ТЗ
-pub fn compute_impact_score(rps_base: f64, rps_fail: f64, p95_base_ms: f64, p95_fail_ms: f64) -> Result<f64, DomainError> {
+pub fn compute_impact_score(
+    rps_base: f64,
+    rps_fail: f64,
+    p95_base_ms: f64,
+    p95_fail_ms: f64,
+) -> Result<f64, DomainError> {
     if rps_base <= 0.0 || p95_base_ms <= 0.0 {
         return Err(DomainError::message("baseline values must be > 0"));
     }
@@ -165,7 +216,9 @@ pub fn compute_impact_score(rps_base: f64, rps_fail: f64, p95_base_ms: f64, p95_
 mod tests {
     use super::*;
     use domain::models::{LoadProfile, Mode, Target};
-    use domain::tests_support::{ConstMetrics, MemoryReport, NoopAgent, NoopMesh, NoopTrace, TestClock};
+    use domain::tests_support::{
+        ConstMetrics, MemoryReport, NoopAgent, NoopMesh, NoopTrace, TestClock,
+    };
     use std::collections::HashMap;
 
     #[tokio::test]
@@ -182,13 +235,38 @@ mod tests {
         let traces = NoopTrace::default();
         let sink = MemoryReport::default();
         let clock = TestClock::default();
-        let mut status = ChaosExperimentStatus { phase: Phase::Pending, started_at: None, ends_at: None, baseline_window: None, failure_window: None, istio_patched: false, snapshot: None };
-        let spec = ChaosExperimentSpec { targets: vec![Target { service: "svc".into(), r#match: None }], mode: Mode::Mesh, duration_seconds: 1, load_profile: LoadProfile { r#type: "none".into(), rps: None, connections: None }, mesh_fault: None, agent_fault: None, labels: HashMap::new() };
-        let exp_ref = ExperimentRef { namespace: "ns".into(), name: "name".into() };
+        let mut status = ChaosExperimentStatus {
+            phase: Phase::Pending,
+            started_at: None,
+            ends_at: None,
+            baseline_window: None,
+            failure_window: None,
+            istio_patched: false,
+            snapshot: None,
+        };
+        let spec = ChaosExperimentSpec {
+            targets: vec![Target {
+                service: "svc".into(),
+                r#match: None,
+            }],
+            mode: Mode::Mesh,
+            duration_seconds: 1,
+            load_profile: LoadProfile {
+                r#type: "none".into(),
+                rps: None,
+                connections: None,
+            },
+            mesh_fault: None,
+            agent_fault: None,
+            labels: HashMap::new(),
+        };
+        let exp_ref = ExperimentRef {
+            namespace: "ns".into(),
+            name: "name".into(),
+        };
         let rec = Reconciler::new(&mesh, &agents, &metrics, &traces, &sink, &clock);
         rec.reconcile(&spec, &mut status, &exp_ref).await.unwrap();
         // After first reconcile we either enter Running or immediately Completed
         assert!(matches!(status.phase, Phase::Running | Phase::Completed));
     }
 }
-
