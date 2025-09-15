@@ -1,0 +1,14 @@
+[package]
+name = "api-types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+schemars = { workspace = true }
+kube = { workspace = true, features = ["derive"] }
+k8s-openapi = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+

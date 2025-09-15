@@ -1,0 +1,16 @@
+[package]
+name = "adapters-k8s"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kube = { workspace = true, features = ["runtime", "derive", "client"] }
+serde = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+domain = { path = "../../domain" }
+api-types = { path = "../../api-types" }
+async-trait = { workspace = true }
+chrono = { workspace = true }
+
