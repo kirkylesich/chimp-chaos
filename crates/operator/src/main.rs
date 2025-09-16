@@ -16,7 +16,6 @@ async fn main() -> anyhow::Result<()> {
         .http_bind
         .as_deref()
         .unwrap_or("0.0.0.0:8080");
-    // Инициализируем DI и запускаем контроллер (пока заглушка)
     let app = build_app();
     let controller_app = app.clone();
     tokio::spawn(async move {
