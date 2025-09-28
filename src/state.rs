@@ -2,10 +2,9 @@
 #![deny(warnings)]
 #![warn(clippy::pedantic)]
 
+use crate::models::{ChaosExperimentStatus, ChaosReport};
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
-
-use domain::models::{ChaosExperimentStatus, ChaosReport};
+use std::sync::Mutex;
 
 #[derive(Default)]
 pub struct SharedState {
@@ -38,5 +37,3 @@ impl SharedState {
         g.get(&(ns.to_string(), name.to_string())).cloned()
     }
 }
-
-pub type SharedStateRef = Arc<SharedState>;
