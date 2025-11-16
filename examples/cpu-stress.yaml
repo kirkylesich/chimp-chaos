@@ -1,0 +1,9 @@
+apiVersion: chaos.io/v1
+kind: ChaosExperiment
+metadata:
+  name: cpu-stress-test
+  namespace: default
+spec:
+  scenario: CpuStress
+  duration: 600
+  targetNamespace: default
