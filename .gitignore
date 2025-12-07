@@ -1,8 +1,14 @@
-/target
-**/*.rs.bk
+# Rust
+/target/
 Cargo.lock
-.DS_Store
+
+# IDE
 .idea/
 .vscode/
-**/*.profraw
-**/node_modules/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
